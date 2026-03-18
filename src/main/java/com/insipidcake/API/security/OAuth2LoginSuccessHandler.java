@@ -40,8 +40,8 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
             .orElseGet(() -> {
                 User user = new User();
                 user.setEmail(email);
-                user.setUsername(name);
-                user.setProvider("GOOGLE");
+                user.setName(name);
+                user.setRole("GOOGLE");
                 user.setCreatedAt(LocalDateTime.now());
                 return userRepository.save(user);
             });

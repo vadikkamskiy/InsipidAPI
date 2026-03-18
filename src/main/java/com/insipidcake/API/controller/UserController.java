@@ -16,7 +16,6 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    // POST требует авторизации
     @PostMapping
     @PreAuthorize("hasAuthority('SCOPE_write')")
     public User addUser(@RequestBody User user) {

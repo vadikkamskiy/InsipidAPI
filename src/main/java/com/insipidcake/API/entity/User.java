@@ -3,29 +3,36 @@ package com.insipidcake.API.entity;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "users")
-@NoArgsConstructor
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String email;
-    private String username;
-    private String provider;
 
-    @Column(name = "created_at")
+    @Column(nullable = false)
+    private String name;
+
+    private String picture;
+
+    @Column(nullable = false)
+    private String role;
+    
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
-
-    public User(String username, String email) {
-        this.username = username;
-        this.email = email;
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
     }
 }
