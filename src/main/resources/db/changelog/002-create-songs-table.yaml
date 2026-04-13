@@ -1,0 +1,219 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: vadikkamskiy
+      changes:
+        - createTable:
+            tableName: author
+            remarks: "Таблица авторов/исполнителей"
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                  remarks: "Имя автора"
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  remarks: "Дата создания записи"
+
+  - changeSet:
+      id: 2
+      author: vadikkamskiy
+      changes:
+        - createTable:
+            tableName: album
+            remarks: "Таблица альбомов"
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                  remarks: "Название альбома"
+              - column:
+                  name: release_year
+                  type: INT
+                  remarks: "Год выпуска"
+              - column:
+                  name: cover_image_path
+                  type: VARCHAR(500)
+                  remarks: "Путь к обложке альбома"
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 3
+      author: vadikkamskiy
+      changes:
+        - createTable:
+            tableName: song
+            remarks: "Таблица песен"
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                  remarks: "Название песни"
+              - column:
+                  name: lyrics
+                  type: TEXT
+                  remarks: "Текст песни"
+              - column:
+                  name: duration
+                  type: INT
+                  remarks: "Длительность в секундах"
+              - column:
+                  name: file_path
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: false
+                  remarks: "Путь к аудиофайлу"
+              - column:
+                  name: cover_image_path
+                  type: VARCHAR(500)
+                  remarks: "Путь к обложке песни (если отличается от альбомной)"
+              - column:
+                  name: album_id
+                  type: BIGINT
+                  remarks: "Ссылка на альбом"
+              - column:
+                  name: track_number
+                  type: INT
+                  remarks: "Номер трека в альбоме"
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  remarks: "Дата обновления"
+        - addForeignKeyConstraint:
+            constraintName: fk_song_album
+            baseTableName: song
+            baseColumnNames: album_id
+            referencedTableName: album
+            referencedColumnNames: id
+            onDelete: SET NULL
+
+  - changeSet:
+      id: 4
+      author: vadikkamskiy
+      changes:
+        - createTable:
+            tableName: song_author
+            remarks: "Связующая таблица песни и авторов (многие-ко-многим)"
+            columns:
+              - column:
+                  name: song_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: author_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: VARCHAR(50)
+                  remarks: "Роль автора (composer/lyricist/arranger)"
+              - column:
+                  name: order_index
+                  type: INT
+                  remarks: "Порядок авторов в песне"
+        - addPrimaryKey:
+            constraintName: pk_song_author
+            tableName: song_author
+            columnNames: song_id, author_id
+        - addForeignKeyConstraint:
+            constraintName: fk_song_author_song
+            baseTableName: song_author
+            baseColumnNames: song_id
+            referencedTableName: song
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            constraintName: fk_song_author_author
+            baseTableName: song_author
+            baseColumnNames: author_id
+            referencedTableName: author
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+  - changeSet:
+      id: 5
+      author: vadikkamskiy
+      changes:
+        - createIndex:
+            indexName: idx_song_title
+            tableName: song
+            columns:
+              - column:
+                  name: title
+        - createIndex:
+            indexName: idx_song_album
+            tableName: song
+            columns:
+              - column:
+                  name: album_id
+        - createIndex:
+            indexName: idx_author_name
+            tableName: author
+            columns:
+              - column:
+                  name: name
+        - createIndex:
+            indexName: idx_album_title
+            tableName: album
+            columns:
+              - column:
+                  name: title
+
+  - changeSet:
+      id: 6
+      author: vadikkamskiy
+      changes:
+        - addColumn:
+            tableName: song
+            columns:
+              - column:
+                  name: isrc
+                  type: VARCHAR(20)
+                  remarks: "International Standard Recording Code"
+              - column:
+                  name: bpm
+                  type: INT
+                  remarks: "Ударов в минуту"
+              - column:
+                  name: key_signature
+                  type: VARCHAR(10)
+                  remarks: "Тональность (C, Dm, G# и т.д.)"
