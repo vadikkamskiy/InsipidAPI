@@ -9,8 +9,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.insipidcake.API.entity.Song;
+import com.insipidcake.API.model.Song;
 import com.insipidcake.API.service.SearchService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
@@ -19,8 +22,7 @@ import com.insipidcake.API.service.SearchService;
 public class SearchController {
     private final SearchService searchService;
     @PostMapping("/search")
-    public List<Song> getLastSong(@RequestBody String entity) {
-        return searchService.getLast(entity);
+    public List<Song> getResults(@RequestBody String query) {
+        return searchService.webSearch(query);
     }
-    
 }
